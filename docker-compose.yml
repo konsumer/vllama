@@ -1,0 +1,25 @@
+services:
+  vllama:
+    build: .
+    ports:
+      - "11434:11434"
+    volumes:
+      - vllama-data:/data
+      - hf-cache:/root/.cache/huggingface
+    environment:
+      - HF_TOKEN=${HF_TOKEN:-}
+      - VLLAMA_MEMORY_GB=${VLLAMA_MEMORY_GB:-0}
+      - VLLM_DTYPE=${VLLM_DTYPE:-auto}
+      - VLLM_MAX_MODEL_LEN=${VLLM_MAX_MODEL_LEN:-8192}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    restart: unless-stopped
+
+volumes:
+  vllama-data:
+  hf-cache:
